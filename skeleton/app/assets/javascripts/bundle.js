@@ -85,7 +85,9 @@ $(callback);
 
 /***/ }),
 /* 1 */
-/***/ (function(module, exports) {
+/***/ (function(module, exports, __webpack_require__) {
+
+const APIUtil = __webpack_require__(!(function webpackMissingModule() { var e = new Error("Cannot find module \"./api_util.js\""); e.code = 'MODULE_NOT_FOUND';; throw e; }()));
 
 class FollowToggle{
   constructor(el) {
@@ -93,6 +95,7 @@ class FollowToggle{
     this.userId = this.$el.data("user-id");
     this.followState = this.$el.data("initial-follow-state");
     this.render();
+    this.handleClick();
   }
 
   render(){
@@ -102,6 +105,30 @@ class FollowToggle{
       this.$el.text("unfollow");
     }
   }
+
+  handleClick() {
+    this.$el.click((e) => {
+        e.preventDefault();
+
+        if(this.followState === "unfollowed") {
+        $.ajax({method: "POST",
+          url: `/users/${this.userId}/follow`,
+          success: () => {
+            this.followState = "followed";
+            this.render();
+          }});
+        }
+        else {
+          $.ajax({method: "DELETE",
+            url: `/users/${this.userId}/follow`,
+            dataType: "json",
+            success: () => {
+              this.followState = "unfollowed";
+              this.render();
+          }});
+        }
+    });
+    }
 }
 
 
