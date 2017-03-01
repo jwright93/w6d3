@@ -87,7 +87,7 @@ $(callback);
 /* 1 */
 /***/ (function(module, exports, __webpack_require__) {
 
-const APIUtil = __webpack_require__(!(function webpackMissingModule() { var e = new Error("Cannot find module \"./api_util.js\""); e.code = 'MODULE_NOT_FOUND';; throw e; }()));
+const APIUtil = __webpack_require__(2);
 
 class FollowToggle{
   constructor(el) {
@@ -104,28 +104,26 @@ class FollowToggle{
     }else{
       this.$el.text("unfollow");
     }
+    this.$el.prop("disabled", false);
   }
 
   handleClick() {
     this.$el.click((e) => {
         e.preventDefault();
-
+        this.$el.prop("disabled", true);
         if(this.followState === "unfollowed") {
-        $.ajax({method: "POST",
-          url: `/users/${this.userId}/follow`,
-          success: () => {
-            this.followState = "followed";
-            this.render();
-          }});
+          APIUtil.followUser(this.userId)
+            .then(() => {
+              this.followState = "followed";
+              this.render();
+            });
         }
         else {
-          $.ajax({method: "DELETE",
-            url: `/users/${this.userId}/follow`,
-            dataType: "json",
-            success: () => {
-              this.followState = "unfollowed";
+          APIUtil.unfollowUser(this.userId)
+            .then(() => {
+              this.followState ="unfollowed";
               this.render();
-          }});
+            });
         }
     });
     }
@@ -134,6 +132,28 @@ class FollowToggle{
 
 
 module.exports = FollowToggle;
+
+
+/***/ }),
+/* 2 */
+/***/ (function(module, exports) {
+
+const APIUtil = {
+  followUser: id => (
+     $.ajax({method: "POST",
+      url: `/users/${id}/follow`
+    })
+  ),
+
+  unfollowUser: id => (
+    $.ajax({method: "DELETE",
+      url: `/users/${id}/follow`,
+      dataType: "json"
+    })
+  )
+};
+
+module.exports = APIUtil;
 
 
 /***/ })
