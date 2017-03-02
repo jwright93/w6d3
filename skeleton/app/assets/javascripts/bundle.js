@@ -71,14 +71,18 @@
 /***/ (function(module, exports, __webpack_require__) {
 
 const FollowToggle = __webpack_require__(1);
+const UsersSearch = __webpack_require__(3);
 
 
 const callback = () => {
-  let array = [];
   $(".follow-toggle").each((i, el) => {
-    array.push(new FollowToggle($(el)));
-    console.log(array[i]);
+    new FollowToggle($(el));
   });
+
+  $(".users-search").each((i,el) => {
+    new UsersSearch($(el));
+  });
+  
 };
 $(callback);
 
@@ -150,10 +154,53 @@ const APIUtil = {
       url: `/users/${id}/follow`,
       dataType: "json"
     })
+  ),
+
+  searchUsers: (query, success) =>  (
+    $.ajax({
+      method: "GET",
+      url:"/users/search",
+      dataType: "json",
+      data: {query},
+    }).then(results => success(results))
   )
+
 };
 
 module.exports = APIUtil;
+
+
+/***/ }),
+/* 3 */
+/***/ (function(module, exports, __webpack_require__) {
+
+const APIUtil = __webpack_require__(2);
+
+class UsersSearch{
+  constructor(el) {
+    this.$el = $(el);
+    this.$input = this.$el.find("input");
+    this.$ul = this.$el.find("ul");
+    this.$input.on("keyup", () => this.handleInput());
+  }
+
+  handleInput() {
+    APIUtil.searchUsers(this.$input.val(), this.renderResults.bind(this));
+  }
+
+
+  renderResults(results){
+    this.$ul.empty();
+    results.forEach((user) => {
+      let $li = $(`<li></li>`);
+      let $a = $(`<a href="/users/${user.id}">${user.username}</a>`);
+      $li.append($a);
+      this.$ul.append($li);
+    });
+
+  }
+}
+module.exports = UsersSearch;
 
 
 /***/ })

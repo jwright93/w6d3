@@ -10,7 +10,17 @@ const APIUtil = {
       url: `/users/${id}/follow`,
       dataType: "json"
     })
+  ),
+
+  searchUsers: (query, success) =>  (
+    $.ajax({
+      method: "GET",
+      url:"/users/search",
+      dataType: "json",
+      data: {query},
+    }).then(results => success(results))
   )
+
 };
 
 module.exports = APIUtil;

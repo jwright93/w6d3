@@ -1,11 +1,15 @@
 const FollowToggle = require('./follow_toggle.js');
+const UsersSearch = require('./users_search.js');
 
 
 const callback = () => {
-  let array = [];
   $(".follow-toggle").each((i, el) => {
-    array.push(new FollowToggle($(el)));
-    console.log(array[i]);
+    new FollowToggle($(el));
   });
+
+  $(".users-search").each((i,el) => {
+    new UsersSearch($(el));
+  });
+  
 };
 $(callback);
